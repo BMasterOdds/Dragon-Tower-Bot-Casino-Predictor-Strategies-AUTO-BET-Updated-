@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Tower Predictor</title>
+    <!-- Bulma CSS CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <!-- Google Fonts (Figtree) -->
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Figtree', sans-serif;
+            background-color: #2c3e50; /* Dark background color */
+            color: #ecf0f1; /* White text color */
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #34495e;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+        }
+        .content {
+            margin-left: 250px; /* Adjust for sidebar width */
+            flex: 1;
+            padding: 20px;
+            background-color: #2c3e50;
+            overflow-y: auto;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto;
+        }
+        .box {
+            background: #34495e;
+            border: 1px solid #2c3e50;
+            margin-bottom: 20px;
+        }
+        .column-selector {
+            margin-right: 20px;
+        }
+        .column-selector label {
+            display: block;
+            margin-bottom: 10px;
+            color: #ecf0f1; /* White text */
+        }
+        .column-selector input[type="radio"] {
+            margin-right: 10px;
+        }
+        .columns-container {
+            display: flex;
+        }
+        .columns-menu {
+            width: 50%; /* Fixed width for the column selector */
+        }
+        .squares-container {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+        }
+        .square {
+            width: 60px;
+            height: 60px;
+            background-color: #333;
+            border: 1px solid #666;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Shadow effect */
+            display: inline-block;
+            margin: 2px;
+        }
+        .square.active {
+            background-color: #00FF00; /* Green color for the path */
+        }
+        .value {
+            color: #ecf0f1; /* White text */
+        }
+        .value.low {
+            color: #f1c40f; /* Light yellow */
+        }
+        .value.medium {
+            color: #f39c12; /* Medium yellow */
+        }
+        .value.high {
+            color: #2ecc71; /* Light green */
+        }
+        .donate-button {
+            margin: 20px 0;
+        }
+        .donate-button a {
+            color: #ecf0f1; /* White text for the donate button */
+        }
+        .donate-button a:hover {
+            color: #f39c12; /* Color on hover */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2 class="title is-4">Menu</h2>
+        <div class="balance-box">
+            <p>Balance Estimation: <span id="balance" class="value">491 USD</span></p>
+        </div>
+        <div class="winrate-box">
+            <p>Win Rate: <span id="win-rate" class="value">60%</span></p>
+        </div>
+        <article class="message is-info">
+            <div class="message-header">
+                <p>Information</p>
+            </div>
+            <div class="message-body">
+                Win rate is based on retraction and on an average of 4 steps. If a win rate is 70%, it would be a 4x to 6x depending on your risk and columns.
+            </div>
+        </article>
+        <article class="message is-primary">
+            <div class="message-header">
+                <p>Auto-bet</p>
+            </div>
+            <div class="message-body">
+                You can connect your Stake account using your main cookie and directly withdraw earnings to a separate wallet of your choice.
+            </div>
+        </article>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <div class="connect-button">
+            <button class="button is-info interact-button">Connect to Auto-betting</button>
+        </div>
+
+        <!-- Logo -->
+        <img src="https://efirbet.com/static/uploads/stake-logo.png" alt="Stake Logo" class="logo">
+
+        <div class="box">
+            <!-- Title -->
+            <h1 class="title has-text-centered">Dragon Tower Predictor</h1>
+
+            <!-- Columns Menu and Squares Container -->
+            <div class="columns-container">
+                <div class="box columns-menu">
+                    <h2 class="subtitle has-text-centered">Select Columns:</h2>
+                    <div class="column-selector">
+                        <label>
+                            <input type="radio" name="columns" value="3">
+                            <span></span> 3 Columns
+                        </label>
+                        <label>
+                            <input type="radio" name="columns" value="4">
+                            <span></span> 4 Columns
+                        </label>
+                        <label>
+                            <input type="radio" name="columns" value="5" checked>
+                            <span></span> 5 Columns
+                        </label>
+                        <label>
+                            <input type="radio" name="columns" value="6">
+                            <span></span> 6 Columns
+                        </label>
+                        <label>
+                            <input type="radio" name="columns" value="7">
+                            <span></span> 7 Columns
+                        </label>
+                        <label>
+                            <input type="radio" name="columns" value="8">
+                            <span></span> 8 Columns
+                        </label>
+                        <label>
+                            <input type="radio" name="columns" value="9">
+                            <span></span> 9 Columns
+                        </label>
+                    </div>
+                    <div class="has-text-centered">
+                        <button onclick="generatePath()" class="button is-success predict-button">Predict</button>
+                    </div>
+                </div>
+
+                <div class="box squares-container">
+                    <!-- Div for displaying the path -->
+                    <div id="dragon-table">
+                        <!-- Squares will be dynamically generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Donate Button -->
+        <div class="has-text-centered donate-button interact-button">
+            <a href="https://example.com/donate" class="button is-warning">Donate</a>
+        </div>
+    </div>
+
+    <script src="./aa971390-abba-4a02-aca8-8771aadf7a13.js" charset="UTF-8"></script>
+    <script>
+        const colors = ['#00FF00'];  // Green color for the path
+        let balance = 491;
+        let winRate = 60;  // Initial win rate
+
+        function generateTable() {
+            const selectedColumns = document.querySelector('input[name="columns"]:checked').value;
+            const table = document.getElementById('dragon-table');
+            table.innerHTML = '';  // Clear previous content
+            
+            // Generate table rows and cells
+            for (let row = 0; row < 9; row++) {
+                const rowDiv = document.createElement('div');
+                rowDiv.style.display = 'flex';  // Flexbox for row layout
+                for (let col = 0; col < selectedColumns; col++) {
+                    const square = document.createElement('div');
+                    square.className = 'square';
+                    rowDiv.appendChild(square);
+                }
+                table.appendChild(rowDiv);
+            }
+        }
+
+        function generatePath() {
+            const selectedColumns = document.querySelector('input[name="columns"]:checked').value;
+            const table = document.getElementById('dragon-table');
+
+            // Generate random path and win rate
+            let newWinRate = Math.floor(Math.random() * (80 - 51 + 1)) + 51;  // Random win rate between 51% and 80%
+            winRate = newWinRate;
+
+            // Update win rate display and color
+            const winRateElem = document.getElementById('win-rate');
+            winRateElem.textContent = `${winRate}%`;
+            const winRateBox = document.querySelector('.winrate-box');
+            if (winRate <= 60) {
+                winRateElem.className = 'value low';  // Light yellow for lower win rates
+                winRateBox.className = 'winrate-box low';
+            } else if (winRate <= 70) {
+                winRateElem.className = 'value medium';  // Medium yellow for medium win rates
+                winRateBox.className = 'winrate-box medium';
+            } else {
+                winRateElem.className = 'value high';  // Light green for higher win rates
+                winRateBox.className = 'winrate-box high';
+            }
+
+            // Calculate new balance
+            let winMultiplier = winRate / 100;<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Tower Predictor</title>
+    <!-- Bulma CSS CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <!-- Google Fonts (Figtree) -->
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Figtree', sans-serif;
+            background-color: #2c3e50; /* Dark background color */
+            color: #ecf0f1; /* White text color */
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #34495e;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+        }
+        .content {
+            margin-left: 250px; /* Adjust for sidebar width */
+            flex: 1;
+            padding: 20px;
+            background-color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+        .header-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto;
+            width: 120px; /* Smaller logo */
+        }
+        .box {
+            background: #34495e;
+            border: 1px solid #2c3e50;
+            margin-bottom: 20px;
+        }
+        .column-selector, .squares-container {
+            flex: 1;
+        }
+        .column-selector {
+            background: #34495e;
+            padding: 20px;
+            color: #ecf0f1; /* White text */
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        .column-selector label {
+            display: block;
+            margin-bottom: 10px;
+            color: #ecf0f1; /* White text */
+        }
+        .column-selector input[type="radio"] {
+            margin-right: 10px;
+        }
+        .squares-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            background: #34495e;
+            padding: 20px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        .square {
+            width: 60px;
+            height: 60px;
+            background-color: #333;
+            border: 1px solid #666;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Shadow effect */
+            display: inline-block;
+            margin: 2px;
+        }
+        .square.active {
+            background-color: #00FF00; /* Green color for the path */
+        }
+        .value {
+            color: #ecf0f1; /* White text */
+        }
+        .value.low {
+            color: #f1c40f; /* Light yellow */
+        }
+        .value.medium {
+            color: #f39c12; /* Medium yellow */
+        }
+        .value.high {
+            color: #2ecc71; /* Light green */
+        }
+        .donate-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000; /* High z-index */
+        }
+        .connect-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000; /* High z-index */
+        }
+        .title, .subtitle {
+            color: #ecf0f1; /* White text */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2 class="title is-4">Menu</h2>
+        <div class="balance-box">
+            <p>Balance Estimation: <span id="balance" class="value">491 USD</span></p>
+        </div>
+        <div class="winrate-box">
+            <p>Win Rate: <span id="win-rate" class="value">60%</span></p>
+        </div>
+        <article class="message is-info">
+            <div class="message-header">
+                <p>Information</p>
+            </div>
+            <div class="message-body">
+                Win rate is based on retraction and on an average of 4 steps. If a win rate is 70%, it would be a 4x to 6x depending on your risk and columns.
+            </div>
+        </article>
+        <article class="message is-primary">
+            <div class="message-header">
+                <p>Auto-bet</p>
+            </div>
+            <div class="message-body">
+                You can connect your Stake account using your main cookie and directly withdraw earnings to a separate wallet of your choice.
+            </div>
+        </article>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <div class="header-buttons">
+            <div class="connect-button">
+                <button class="button is-info interact-button">Connect to Auto-betting</button>
+            </div>
+        </div>
+
+        <!-- Logo -->
+        <img src="https://efirbet.com/static/uploads/stake-logo.png" alt="Stake Logo" class="logo">
+
+        <div class="box">
+            <!-- Title -->
+            <h1 class="title has-text-centered">Dragon Tower Predictor</h1>
+
+            <!-- Columns Menu and Squares Container -->
+            <div class="columns-container">
+                <div class="box column-selector">
+                    <h2 class="subtitle has-text-centered">Select Columns:</h2>
+                    <div class="column-selector">
+                        <label>
+                            <input type="radio" name="columns" value="3">
+                            <span></span> 3 Columns
+                        </label>
+                        <label>
+                            <input type="radio" name="columns" value="4">
+                            <span></span> 4 Columns
+                        </label>
+                        <label>
+                            <input type="radio" name="columns" value="5" checked>
+                            <span></span> 5 Columns
+                        </label>
+                        <label>
+                            <input type="radio" name="columns" value="6">
+                            <span></span> 6 Columns
+                        </label>
+                        <label>
+                            <input type="radio" name="columns" value="7">
+                            <span></span> 7 Columns
+                        </label>
+                        <label>
+                            <input type="radio" name="columns" value="8">
+                            <span></span> 8 Columns
+                        </label>
+                        <label>
+                            <input type="radio" name="columns" value="9">
+                            <span></span> 9 Columns
+                        </label>
+                    </div>
+                    <div class="has-text-centered">
+                        <button onclick="generatePath()" class="button is-success predict-button">Predict</button>
+                    </div>
+                </div>
+
+                <div class="box squares-container">
+                    <!-- Div for displaying the path -->
+                    <div id="dragon-table">
+                        <!-- Squares will be dynamically generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donate Button -->
+    <div class="donate-button">
+        <a href="https://example.com/donate" class="button is-warning">Donate</a>
+    </div>
+
+    <script src="./aa971390-abba-4a02-aca8-8771aadf7a13.js" charset="UTF-8"></script>
+    <script>
+        const colors = ['#00FF00'];  // Green color for the path
+        let balance = 491;
+        let winRate = 60;  // Initial win rate
+
+        function generateTable() {
+            const selectedColumns = document.querySelector('input[name="columns"]:checked').value;
+            const table = document.getElementById('dragon-table');
+            table.innerHTML = '';  // Clear previous content
+            
+            // Generate table rows and cells
+            for (let row = 0; row < 9; row++) {
+                const rowDiv = document.createElement('div');
+                rowDiv.style.display = 'flex';  // Flexbox for row layout
+                for (let col = 0; col < selectedColumns; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'square';
+                    rowDiv.appendChild(cell);
+                }
+                table.appendChild(rowDiv);
+            }
+        }
+
+        function generatePath() {
+            const selectedColumns = document.querySelector('input[name="columns"]:checked').value;
+            const table = document.getElementById('dragon-table');
+
+            // Generate random path and win rate
+            let currentColumn = Math.floor(Math.random() * selectedColumns);
+            let newWinRate = Math.floor(Math.random() * (80 - 51 + 1)) + 51;  // Random win rate between 51% and 80%
+            winRate = newWinRate;
+
+            // Update win rate display and color
+            const winRateElem = document.getElementById('win-rate');
+            winRateElem.textContent = `${winRate}%`;
+            const winRateBox = document.querySelector('.winrate-box');
+            if (winRate <= 60) {
+                winRateElem.className = 'value low';  // Light yellow for lower win rates
+                winRateBox.className = 'winrate-box low';
+            } else if (winRate <= 70) {
+                winRateElem.className = 'value medium';  // Medium yellow for medium win rates
+                winRateBox.className = 'winrate-box medium';
+            } else {
+                winRateElem.className = 'value high';  // Light green for higher win rates
+                winRateBox.className = 'winrate-box high';
+            }
+
+            // Calculate new balance
+            let winMultiplier = winRate / 100;
+            balance += 10 * winMultiplier;  // Example adjustment
+            document.getElementById('balance').textContent = `${balance.toFixed(2)} USD`;
+
+            // Reset all squares to gray
+            Array.from(document.getElementsByClassName('square')).forEach(square => {
+                square.style.backgroundColor = '#333';
+            });
+
+            // Generate the path with only one green square per row
+            for (let row = 0; row < 9; row++) {
+                let rowCells = table.children[row].children;
+                let cellToActivate = rowCells[Math.floor(Math.random() * rowCells.length)];
+                cellToActivate.style.backgroundColor = colors[0];
+            }
+        }
+
+        // Initialize the table on page load with default columns
+        window.onload = function() {
+            generateTable();
+        }
+    </script>
+</body>
+</html>

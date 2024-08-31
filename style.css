@@ -1,0 +1,36 @@
+body {
+    background-color: #181818;
+    color: #fff;
+    font-family: sans-serif;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.controls {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.tower {
+    border: 1px solid #333;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td {
+    width: calc(100% / 9); /* Adjust for column number */
+    height: 50px;
+    border: 1px solid #333;
+    text-align: center;
+}
+
+/* Add more styles for colors, animations, etc. */
