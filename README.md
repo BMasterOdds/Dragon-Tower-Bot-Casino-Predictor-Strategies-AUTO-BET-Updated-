@@ -8,7 +8,7 @@
 <a href="#"><img src="https://img.shields.io/badge/Litecoin-A6A9AA?style=for-the-badge&logo=Litecoin&logoColor=white"/></a>
 <a href="#"><img src="https://img.shields.io/badge/Laravel-f5441e?style=for-the-badge&logo=laravel&logoColor=white"/></a>
 <a href="#"><img src="https://img.shields.io/badge/JavaScript-f5ee1e?style=for-the-badge&logo=javascript&logoColor=white"/></a>
-
+ 
 </div>
 
 <p align="center">
